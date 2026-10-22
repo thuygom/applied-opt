@@ -25,6 +25,20 @@ MARKER = "@@applied-opt@@ "
 REPLY_FIELDS = ("output", "spans", "calls", "cost_usd")
 
 
+class StopWorker(Exception):
+    """Explicitly stop evaluation across the worker protocol.
+
+    The adapter must classify fatal quota/credential errors; ordinary transient
+    failures do not stop the evaluation. Use a non-sensitive reason code.
+    """
+
+    stop_evaluation = True
+
+    def __init__(self, error_type: str = "StopEvaluation"):
+        super().__init__(error_type)
+        self.error_type = error_type
+
+
 def _reply(result: Any) -> dict[str, Any]:
     if isinstance(result, dict) and "output" in result and set(result) <= set(REPLY_FIELDS):
         return {key: result.get(key) for key in REPLY_FIELDS}
@@ -64,6 +78,12 @@ def serve(handler: Callable[[Any], Any], *, ready: dict[str, Any] | None = None,
                 message = _reply(result)
             except Exception as exc:  # The evaluator records the type as a failed run.
                 message = {"error_type": type(exc).__name__}
+                # An explicit marker also works when this file runs as __main__
+                # and the handler imports another instance of the worker module.
+                if getattr(exc, "stop_evaluation", False) is True:
+                    reason = getattr(exc, "error_type", None)
+                    message = {"error_type": reason if isinstance(reason, str) and reason else type(exc).__name__,
+                               "stop_evaluation": True}
             message.update(id=request.get("id"), worker_ms=round((time.perf_counter() - started) * 1000, 3))
             send(message)
 

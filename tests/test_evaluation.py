@@ -158,7 +158,7 @@ class PlanningTests(unittest.TestCase):
                  {"name": "failed", "duration_ms": 900, "status": "error"}]
         deps = {"classify": ["select"], "typo": ["select"], "generate": ["select", "typo"],
                 "review": ["generate", "classify", "typo"], "unobserved": ["select"]}
-        work = work_from_spans(spans, deps)
+        work = work_from_spans(spans, deps, concurrency_safe={s["name"]: True for s in spans})
         self.assertEqual({"select", "classify", "typo", "generate", "review"}, {w.name for w in work})
         self.assertEqual(11700, next(w for w in work if w.name == "typo").duration_ms)
         stages = {row["name"]: row for row in sensitivity(work)["stages"]}

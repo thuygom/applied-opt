@@ -106,30 +106,49 @@ def conditional_tradeoff(*, decision_ms: float, branch_ms: float, needed_probabi
 
 
 def work_from_spans(spans: Iterable[Mapping[str, Any]], dependencies: Mapping[str, Sequence[str]] | None = None, *,
-                    resources: Mapping[str, str] | None = None) -> list[Work]:
-    """Build Work from measured stage spans, one median duration per stage name.
+                    resources: Mapping[str, str] | None = None,
+                    concurrency_safe: Mapping[str, bool] | None = None) -> list[Work]:
+    """Build Work from successful spans, one median duration per stage name.
 
-    Spans may come from several runs of the same request shape. Dependencies come
-    from ``dependencies`` or a span's own ``depends_on``; edges to stages that
-    were not observed are dropped. Observed overlap marks stages concurrency
-    safe; that is a measurement of this trace, not a proof for other inputs.
+    Dependencies come from the supplied mapping or ``depends_on``; unobserved
+    stages are omitted. Resource names are preserved unless explicitly replaced.
+    Concurrency requires a caller-supplied per-stage contract and defaults to
+    False. Observed overlap is not proof of safe parallel execution.
     """
+    resources = dict(resources or {})
+    safe = dict(concurrency_safe or {})
+    if any(not isinstance(k, str) or not k or not isinstance(v, str) or not v
+           for k, v in resources.items()):
+        raise ValueError("resources must map stage names to nonempty resource names")
+    if any(not isinstance(k, str) or not k or type(v) is not bool for k, v in safe.items()):
+        raise ValueError("concurrency_safe must map stage names to booleans")
     durations: dict[str, list[float]] = {}
     observed_deps: dict[str, set[str]] = {}
+    observed_resources: dict[str, set[str]] = {}
     for span in spans:
         name, duration = span.get("name"), span.get("duration_ms")
         if (not isinstance(name, str) or not name or type(duration) not in (int, float)
-                or not math.isfinite(duration) or duration <= 0 or span.get("status") not in (None, "success", "ok")):
+                or not math.isfinite(duration) or duration <= 0
+                or span.get("status") not in (None, "completed", "success", "ok")):
             continue
+        resource = resources.get(name, span.get("resource"))
+        if resource is None:
+            resource = "io"
+        if not isinstance(resource, str) or not resource:
+            raise ValueError("span resource must be a nonempty string or None")
         durations.setdefault(name, []).append(float(duration))
         observed_deps.setdefault(name, set()).update(d for d in span.get("depends_on") or () if isinstance(d, str))
+        observed_resources.setdefault(name, set()).add(resource)
     if not durations:
         raise ValueError("no successful positive-duration spans")
     work = []
     for name, values in durations.items():
+        if len(observed_resources[name]) != 1:
+            raise ValueError(f"conflicting resources for stage {name!r}; supply an explicit resources mapping")
         declared = (dependencies or {}).get(name)
         deps = tuple(d for d in (declared if declared is not None else sorted(observed_deps[name])) if d in durations and d != name)
-        work.append(Work(name, statistics.median(values), deps, (resources or {}).get(name, "io"), True))
+        work.append(Work(name, statistics.median(values), deps,
+                         next(iter(observed_resources[name])), safe.get(name, False)))
     return work
 
 
