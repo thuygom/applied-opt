@@ -2,9 +2,9 @@
 
 **Review AI application code, propose bounded optimizations, and verify the result.**
 
-Applied Opt connects line-level code review with execution measurements. It focuses on sequential/parallel trade-offs, unnecessary analysis stages, retry amplification, and cache correctness. Python 3.11+, Apache-2.0, no runtime dependencies.
+Applied Opt connects line-level code review with execution measurements. It focuses on sequential/parallel trade-offs, unnecessary analysis stages, retry amplification, and cache correctness. Python 3.11+, Apache-2.0, no runtime dependencies for the core. The optional hosted server uses Gunicorn on Python 3.12+.
 
-[한국어](README.ko.md) · [Architecture](docs/architecture.md) · [Trade-offs](docs/tradeoffs.md) · [Integration](docs/integration.md) · [Flow compiler](docs/diagrams.md) · [MCP](docs/mcp.md)
+[한국어](README.ko.md) · [Host the web app](docs/hosting.md) · [Architecture](docs/architecture.md) · [Trade-offs](docs/tradeoffs.md) · [Integration](docs/integration.md) · [Flow compiler](docs/diagrams.md) · [MCP](docs/mcp.md)
 
 ## What ships in v0.1
 
@@ -67,9 +67,17 @@ Configure an MCP client's stdio transport to run `applied-opt mcp` or `python -m
 
 ## Reporting and deployment
 
-The local Python server can review pasted Python through a non-executing AST endpoint and read one configured report file. It does not clone arbitrary repositories or run uploaded code. A hosted static dashboard displays bundled/imported reports; it does not provide the local Python analysis endpoint.
+**The web server and hosting configuration are in this repository.** One application serves the dashboard, authenticated Python code review, graph compilation, and the configured report. `applied-opt host` runs the Gunicorn-backed server; it accepts a declared public HTTPS origin even when a proxy uses a different internal port.
 
-Docker packaging is included. Set `APPLIED_OPT_TOKEN` to a strong value of at least 16 characters, then run `docker compose up --build`. Use the dashboard's token field when authentication is enabled. Non-loopback binding requires a token. The supplied setup supports local/same-port Docker access; current Host/Origin validation expects the server port. A reverse proxy with a different public port requires reviewed integration changes. Turnkey Internet-facing deployment is not included.
+From the source checkout, with Docker Compose and Python 3 installed:
+
+```bash
+python3 deploy/bootstrap.py --up
+```
+
+Open **http://localhost:8787** and enter the generated `APPLIED_OPT_TOKEN` from `.env` in the dashboard. Existing environment files are never overwritten. For a VPS with a DNS hostname, `python3 deploy/bootstrap.py --domain opt.example.com --up` prepares a separate production stack with Caddy HTTPS and persistent certificate storage.
+
+[Deploy to Render](https://render.com/deploy?repo=https://github.com/thuygom/applied-opt) uses the included [`render.yaml`](render.yaml) Docker Blueprint. The image serves both UI and API; the Blueprint asks Render to generate a deployment token, and the server uses the platform's public URL and port. [Hosting instructions](docs/hosting.md) cover local Docker, VPS setup, domain configuration, reports, health checks, and verification. Provider accounts and DNS are configured on your own deployment target; including these assets does not claim a provider deployment was performed.
 
 The bundled demo measures real local wall time around **synthetic async delays and deterministic fixtures**. It is neither an LLM accuracy benchmark nor evidence of a production 15-second SLA. Models, prompts, cache states, reference dates, and load must be controlled in your own comparison.
 

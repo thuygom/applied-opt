@@ -1,0 +1,41 @@
+# Standalone VPS stack. Do not merge this with compose.yaml, which publishes
+# a local development port. Use the exact command in docs/hosting.md.
+services:
+  applied-opt:
+    build: .
+    environment:
+      APPLIED_OPT_TOKEN: "${APPLIED_OPT_TOKEN:?Set an API token of at least 16 characters}"
+      APPLIED_OPT_PUBLIC_URL: "https://${DOMAIN:?Set your public DNS name}"
+      APPLIED_OPT_REPORT: /data/report.json
+      HOST: 0.0.0.0
+      PORT: "8787"
+    volumes:
+      - "./examples/demo-report.json:/data/report.json:ro"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      DOMAIN: "${DOMAIN:?Set your public DNS name}"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - "./deploy/Caddyfile:/etc/caddy/Caddyfile:ro"
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      applied-opt:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

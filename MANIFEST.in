@@ -1,4 +1,7 @@
 include LICENSE NOTICE README.md README.ko.md CONTRIBUTING.md SECURITY.md CHANGELOG.md
+include Dockerfile compose.yaml compose.production.yaml render.yaml .env.example
+recursive-include deploy *.py Caddyfile
+recursive-include scripts *.py
 recursive-include src/applied_opt/web *.html
 recursive-include docs *.md
 recursive-include examples *.py *.toml *.json *.mmd *.puml *.svg *.diff

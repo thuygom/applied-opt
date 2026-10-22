@@ -1,0 +1,25 @@
+# The same Docker image serves the dashboard and authenticated Python API.
+services:
+  - type: web
+    name: applied-opt
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    autoDeployTrigger: "off"
+    envVars:
+      - key: APPLIED_OPT_TOKEN
+        generateValue: true
+      - key: APPLIED_OPT_REPORT
+        value: /app/examples/demo-report.json
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: "10000"
+      - key: WEB_CONCURRENCY
+        value: "1"
+      - key: APPLIED_OPT_THREADS
+        value: "4"
+# APPLIED_OPT_PUBLIC_URL defaults to Render's own RENDER_EXTERNAL_URL.
+# For a custom domain, explicitly set APPLIED_OPT_PUBLIC_URL=https://your.domain.

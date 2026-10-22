@@ -51,6 +51,8 @@ class ServerTests(unittest.TestCase):
         status, headers, body = self.request("GET", "/healthz")
         self.assertEqual(status, 200)
         self.assertEqual(json.loads(body)["service"], "applied-opt")
+        self.assertEqual(json.loads(body)["mode"], "local")
+        self.assertIs(json.loads(body)["auth_required"], False)
         self.assertEqual(headers["Cache-Control"], "no-store")
         self.assertEqual(headers["X-Content-Type-Options"], "nosniff")
         status, headers, body = self.request("GET", "/")

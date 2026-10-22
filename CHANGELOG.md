@@ -11,5 +11,7 @@
 - Common graph compiler for inferred source, declared plans, and measured traces, with Mermaid, PlantUML, SVG, and JSON exports.
 - Local stdio MCP server with four read-only tools and input/graph snapshot revisions.
 - Import-shadowing checks for library-specific async review rules and escaped, bounded diagram exports.
+- Same-origin hosted dashboard and Python API with a Gunicorn entry point, explicit public-origin checks, and required token authentication.
+- Repository-owned Docker hosting, local bootstrap, standalone Caddy HTTPS VPS stack, and Render Docker Blueprint.
 
-Alpha scope: Python code, narrow source transformations, application-supplied quality checks, and a documented MCP protocol subset. Diagram languages are export formats, not general parsers. Server packaging targets local/same-port Docker access. No universal optimization or production SLA guarantee.
+Alpha scope: Python code, narrow source transformations, application-supplied quality checks, and a documented MCP protocol subset. Diagram languages are export formats, not general parsers. Hosting assets support a shared-token web service; they do not provide tenant isolation or provision an external hosting account. No universal optimization or production SLA guarantee.

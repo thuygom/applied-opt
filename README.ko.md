@@ -2,7 +2,7 @@
 
 **AI 애플리케이션 코드를 리뷰하고, 최적화 diff를 제안하고, 속도와 기능 보존을 함께 검증하는 프레임워크입니다.**
 
-Python 3.11+ · Apache-2.0 · 런타임 외부 의존성 없음 · v0.1 alpha
+Python 3.11+ · Apache-2.0 · 코어 런타임 외부 의존성 없음 · 호스팅 옵션은 Python 3.12+ 및 Gunicorn 사용 · v0.1 alpha
 
 ## 하는 일
 
@@ -67,8 +67,18 @@ MCP 클라이언트의 stdio 명령을 `applied-opt mcp` 또는 `python -m appli
 
 ## 대시보드와 리뷰 스킬
 
-로컬 Python 서버는 코드 붙여넣기 리뷰와 보고서 조회를 제공합니다. 정적 웹에 올린 화면은 Python 분석 서버를 대신하지 않습니다. Docker 사용 시 16자 이상의 `APPLIED_OPT_TOKEN`을 지정하고 `docker compose up --build`로 실행합니다. 기본 구성은 로컬·동일 포트 접근용입니다. 현재 Host/Origin 검사는 서버 포트를 전제로 하므로, 공개 포트가 다른 리버스 프록시 연결에는 별도 검토와 변경이 필요합니다. 바로 인터넷에 공개할 수 있는 운영 배포 구성을 제공하는 것은 아닙니다.
+**웹서버와 호스팅 설정을 이 저장소에 포함했습니다.** `applied-opt host`로 실행하는 Gunicorn 서버 하나가 대시보드, 인증된 Python 코드리뷰 API, 흐름도 컴파일, 보고서 조회를 함께 제공합니다. 리버스 프록시의 HTTPS 공개 주소와 내부 포트가 달라도 선언한 공개 origin을 기준으로 검증합니다.
+
+Docker Compose와 Python 3가 설치되어 있다면 저장소에서 다음 한 줄로 실행합니다.
+
+```bash
+python3 deploy/bootstrap.py --up
+```
+
+**http://localhost:8787**을 열고, 생성된 `.env`의 `APPLIED_OPT_TOKEN` 값을 대시보드에 입력하세요. 기존 환경 파일은 덮어쓰지 않습니다. VPS에서는 `python3 deploy/bootstrap.py --domain opt.example.com --up`으로 별도 운영 구성과 Caddy HTTPS를 준비합니다. DNS를 해당 서버로 연결하고 80·443 포트를 열어야 하며 인증서 상태는 볼륨에 보존됩니다.
+
+[Render에 배포](https://render.com/deploy?repo=https://github.com/thuygom/applied-opt) 링크는 저장소의 [`render.yaml`](render.yaml)을 읽어 같은 Docker 웹서버를 배포합니다. 토큰은 Render가 생성하고 서버가 플랫폼 공개 URL과 포트를 사용합니다. [호스팅 설명](docs/hosting.md)에 로컬 Docker·VPS·Render 실행법, 환경변수, 보고서 연결, 인증·상태 확인 절차가 있습니다. 배포 설정을 제공하는 것이며, 이 저장소 작성만으로 외부 계정·DNS·서비스 배포가 완료되는 것은 아닙니다.
 
 `skills/review-ai-pipeline`에 스킬 소스가 있습니다. 사용하는 에이전트의 스킬 설치 방식에 따라 등록하세요. 자동 등록·활성화는 포함하지 않습니다. CodeRabbit의 리뷰 흐름을 참고했으며, 제휴하거나 그 구현을 포함한 프로젝트는 아닙니다.
 
-[설계](docs/architecture.md) · [직렬/병렬 판단](docs/tradeoffs.md) · [실제 코드 연결](docs/integration.md) · [흐름도](docs/diagrams.md) · [MCP](docs/mcp.md)
+[호스팅](docs/hosting.md) · [설계](docs/architecture.md) · [직렬/병렬 판단](docs/tradeoffs.md) · [실제 코드 연결](docs/integration.md) · [흐름도](docs/diagrams.md) · [MCP](docs/mcp.md)

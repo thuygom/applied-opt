@@ -131,6 +131,7 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8787)
     serve.add_argument("--token-env", default="APPLIED_OPT_TOKEN", help="Environment variable name, never a literal token")
+    sub.add_parser("host", help="Run production Gunicorn hosting using APPLIED_OPT_* and PORT environment variables")
     sub.add_parser("mcp", help="Serve read-only review/planning/diagram tools over MCP stdio")
     return parser
 
@@ -231,6 +232,9 @@ def main(argv: list[str] | None = None) -> int:
             from .server import serve
             serve(report_path=args.report, host=args.host, port=args.port, token=os.environ.get(args.token_env))
             return 0
+        if args.command == "host":
+            from .hosting import main as hosting_main
+            return hosting_main()
         if args.command == "mcp":
             from .mcp_server import main as mcp_main
             return mcp_main()

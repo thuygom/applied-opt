@@ -9,6 +9,7 @@ build
 tests
 skills
 docs
-examples
+examples/*
+!examples/demo-report.json
 artifacts
 *.applied-opt.bak

@@ -5,6 +5,10 @@ services:
       - "127.0.0.1:8787:8787"
     environment:
       APPLIED_OPT_TOKEN: "${APPLIED_OPT_TOKEN:?Set an API token of at least 16 characters}"
+      APPLIED_OPT_PUBLIC_URL: "${APPLIED_OPT_PUBLIC_URL:-http://localhost:8787}"
+      APPLIED_OPT_REPORT: /data/report.json
+      HOST: 0.0.0.0
+      PORT: "8787"
     volumes:
       - "./examples/demo-report.json:/data/report.json:ro"
     read_only: true
@@ -13,9 +17,4 @@ services:
     cap_drop: [ALL]
     security_opt:
       - no-new-privileges:true
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8787/healthz', timeout=2)"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
     restart: unless-stopped
