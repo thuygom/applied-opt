@@ -13,6 +13,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Mapping, Sequence
 
+from .worker import StopWorker
+
 
 @dataclass(frozen=True)
 class Case:
@@ -27,9 +29,10 @@ class Observation:
     spans: list[dict[str, Any]] = field(default_factory=list)
     calls: int | None = None
     cost_usd: float | None = None
+    worker_ms: float | None = None
 
 
-class StopEvaluation(Exception):
+class StopEvaluation(StopWorker):
     """Raise from a runner to stop every further invocation of both variants.
 
     Use it for conditions that make more runs wasteful or harmful, such as an
@@ -111,9 +114,10 @@ async def evaluate(
     messages. A speedup cannot override a quality failure. Cache states and
     model/reference-time controls remain the caller's responsibility.
 
-    ``max_invocations`` is a budget for paid runners: when the planned count
-    (cases x (warmups + repetitions) x 2) exceeds it, nothing runs. A runner
-    raising :class:`StopEvaluation` ends the evaluation early.
+    ``max_invocations`` limits runner invocations, including warmups: when
+    cases x (warmups + repetitions) x 2 exceeds it, nothing runs. It does not
+    bound provider calls, SDK retries, tokens, or billed cost within a runner.
+    A runner raising :class:`StopEvaluation` ends the evaluation early.
     """
     if not cases or repetitions < 1 or warmups < 0:
         raise ValueError("cases and positive repetitions are required")
@@ -197,6 +201,10 @@ async def evaluate(
                     if not passed:
                         failures.append({"case_id": case.id, "variant": variant, "iteration": iteration, "check": name, "error_type": error})
                 record = {"latency_ms": round(elapsed, 3), "checks": checks, "calls": observation.calls, "cost_usd": observation.cost_usd}
+                if observation.worker_ms is not None:
+                    value = observation.worker_ms
+                    if type(value) in (int, float) and math.isfinite(value) and value >= 0:
+                        record["worker_ms"] = value
                 records[variant].append(record)
                 if not traces[variant] and observation.spans:
                     traces[variant] = _metadata_spans(observation.spans)
