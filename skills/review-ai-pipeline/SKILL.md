@@ -30,8 +30,10 @@ python3 /absolute/path/review-ai-pipeline/scripts/review.py /absolute/path/proje
 ```
 
 Use `--help` to inspect supported report options. The wrapper locates the
-framework relative to this skill or uses an installed package; it does not import
-the reviewed project. If unavailable, continue with source inspection and report
+framework from `APPLIED_OPT_SRC`, the checkout this skill lives in, a copy under
+the installed skill's `vendor/applied_opt`, or an installed package; it does not
+import the reviewed project. To install the skill outside the checkout, copy
+`src/applied_opt` into `vendor/` next to `scripts/`. If unavailable, continue with source inspection and report
 the missing static check. Do not install or execute an untrusted project's
 dependencies just to review it.
 

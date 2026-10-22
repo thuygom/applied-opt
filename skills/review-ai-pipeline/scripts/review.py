@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -16,12 +17,21 @@ _BOOTSTRAP = (
 )
 
 
-def cli_prefix() -> list[str]:
-    """Use this checkout's known source layout, otherwise an isolated install."""
+def framework_sources() -> list[Path]:
+    """Explicit ``APPLIED_OPT_SRC``, this checkout's ``src``, then a copy vendored into the installed skill."""
     script = Path(__file__).resolve()
-    source = script.parents[3] / "src"
-    if (source / "applied_opt" / "cli.py").is_file():
-        return [sys.executable, "-B", "-I", "-c", _BOOTSTRAP, str(source)]
+    candidates = [script.parents[3] / "src", script.parents[1] / "vendor"]
+    if os.environ.get("APPLIED_OPT_SRC"):
+        candidates.insert(0, Path(os.environ["APPLIED_OPT_SRC"]).expanduser())
+    return candidates
+
+
+def cli_prefix() -> list[str]:
+    """Use a known source layout, otherwise an isolated install."""
+    script = Path(__file__).resolve()
+    for source in framework_sources():
+        if (source / "applied_opt" / "cli.py").is_file():
+            return [sys.executable, "-B", "-I", "-c", _BOOTSTRAP, str(source.resolve())]
     probe = subprocess.run(
         [sys.executable, "-B", "-I", "-c",
          "import importlib.util; raise SystemExit(0 if importlib.util.find_spec('applied_opt.cli') else 1)"],
@@ -30,8 +40,9 @@ def cli_prefix() -> list[str]:
     if probe.returncode == 0:
         return [sys.executable, "-B", "-I", "-m", "applied_opt.cli"]
     raise RuntimeError(
-        "Applied Opt is unavailable. Use this skill inside its framework checkout "
-        "or install the trusted Applied Opt package into this Python environment."
+        "Applied Opt is unavailable. Use this skill inside its framework checkout, set "
+        "APPLIED_OPT_SRC to a checkout's src directory, vendor src/applied_opt into the "
+        "skill's vendor/ directory, or install the trusted package into this Python."
     )
 
 
