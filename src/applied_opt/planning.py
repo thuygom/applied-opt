@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import heapq
 import math
-from dataclasses import dataclass
-from typing import Any, Mapping, Sequence
+import statistics
+from dataclasses import dataclass, replace
+from typing import Any, Iterable, Mapping, Sequence
 
 
 @dataclass(frozen=True)
@@ -102,3 +103,86 @@ def conditional_tradeoff(*, decision_ms: float, branch_ms: float, needed_probabi
         raise ValueError("finite nonnegative values and probability in [0,1] required")
     p = needed_probability
     return {"kind": "estimate", "gated": {"expected_ms": decision_ms + p * branch_ms, "expected_cost_usd": decision_cost_usd + p * branch_cost_usd}, "speculative": {"expected_ms": p * max(decision_ms, branch_ms) + (1 - p) * decision_ms, "expected_cost_usd": decision_cost_usd + branch_cost_usd}, "assumptions": ["Side effects are prohibited for speculative work.", "The branch can run without the decision output.", "Unneeded speculative work is fully billed; client cancellation need not cancel provider billing.", "Routing correctness must be validated separately."]}
+
+
+def work_from_spans(spans: Iterable[Mapping[str, Any]], dependencies: Mapping[str, Sequence[str]] | None = None, *,
+                    resources: Mapping[str, str] | None = None) -> list[Work]:
+    """Build Work from measured stage spans, one median duration per stage name.
+
+    Spans may come from several runs of the same request shape. Dependencies come
+    from ``dependencies`` or a span's own ``depends_on``; edges to stages that
+    were not observed are dropped. Observed overlap marks stages concurrency
+    safe; that is a measurement of this trace, not a proof for other inputs.
+    """
+    durations: dict[str, list[float]] = {}
+    observed_deps: dict[str, set[str]] = {}
+    for span in spans:
+        name, duration = span.get("name"), span.get("duration_ms")
+        if (not isinstance(name, str) or not name or type(duration) not in (int, float)
+                or not math.isfinite(duration) or duration <= 0 or span.get("status") not in (None, "success", "ok")):
+            continue
+        durations.setdefault(name, []).append(float(duration))
+        observed_deps.setdefault(name, set()).update(d for d in span.get("depends_on") or () if isinstance(d, str))
+    if not durations:
+        raise ValueError("no successful positive-duration spans")
+    work = []
+    for name, values in durations.items():
+        declared = (dependencies or {}).get(name)
+        deps = tuple(d for d in (declared if declared is not None else sorted(observed_deps[name])) if d in durations and d != name)
+        work.append(Work(name, statistics.median(values), deps, (resources or {}).get(name, "io"), True))
+    return work
+
+
+def what_if(work: Sequence[Work], *, durations: Mapping[str, float] | None = None,
+            drop_dependencies: Iterable[tuple[str, str]] = (), concurrency: int = 4,
+            resource_limits: Mapping[str, int] | None = None,
+            contention_multiplier: Mapping[str, float] | None = None, launch_overhead_ms: float = 0.0) -> dict[str, Any]:
+    """Estimate how changed stage durations or removed edges move end-to-end time.
+
+    ``drop_dependencies`` holds ``(stage, dependency)`` pairs, for example running
+    a correction alongside generation instead of before it. The estimate replays
+    the same greedy schedule; it says whether a change could be visible, not
+    whether the changed pipeline keeps its quality.
+    """
+    durations = dict(durations or {})
+    drops = set(drop_dependencies)
+    names = {w.name for w in work}
+    unknown = (set(durations) | {stage for stage, _ in drops}) - names
+    if unknown:
+        raise ValueError(f"unknown stages: {sorted(unknown)}")
+    options = dict(concurrency=concurrency, resource_limits=resource_limits,
+                   contention_multiplier=contention_multiplier, launch_overhead_ms=launch_overhead_ms)
+    baseline = estimate_schedule(work, **options)
+    changed = [replace(w, duration_ms=durations.get(w.name, w.duration_ms),
+                       depends_on=tuple(d for d in w.depends_on if (w.name, d) not in drops)) for w in work]
+    scenario = estimate_schedule(changed, **options)
+    return {"kind": "estimate", "baseline_ms": baseline["estimated_ms"], "scenario_ms": scenario["estimated_ms"],
+            "saving_ms": round(baseline["estimated_ms"] - scenario["estimated_ms"], 3),
+            "changes": {"durations": durations, "dropped_dependencies": sorted(drops)},
+            "assumptions": ["Other stage durations, dependencies and capacities stay as supplied.",
+                            "A dropped dependency must be semantically safe; validate quality separately."]}
+
+
+def sensitivity(work: Sequence[Work], *, fraction: float = 0.5, concurrency: int = 4,
+                resource_limits: Mapping[str, int] | None = None,
+                contention_multiplier: Mapping[str, float] | None = None, launch_overhead_ms: float = 0.0) -> dict[str, Any]:
+    """For each stage alone, the end-to-end saving if it were ``fraction`` faster.
+
+    A stage hidden behind parallel work shows little or no visible saving:
+    shortening it would not shorten the request. Sorted by visible saving.
+    """
+    if not 0 < fraction <= 1:
+        raise ValueError("fraction must be in (0, 1]")
+    options = dict(concurrency=concurrency, resource_limits=resource_limits,
+                   contention_multiplier=contention_multiplier, launch_overhead_ms=launch_overhead_ms)
+    stages = []
+    for w in work:
+        reduced = max(w.duration_ms * (1 - fraction), 1e-3)
+        result = what_if(work, durations={w.name: reduced}, **options)
+        removed = w.duration_ms - reduced
+        stages.append({"name": w.name, "duration_ms": w.duration_ms, "visible_saving_ms": result["saving_ms"],
+                       "visible_share": round(result["saving_ms"] / removed, 4) if removed > 0 else 0.0})
+    stages.sort(key=lambda row: (-row["visible_saving_ms"], row["name"]))
+    return {"kind": "estimate", "baseline_ms": estimate_schedule(work, **options)["estimated_ms"], "fraction": fraction,
+            "stages": stages, "assumptions": ["Each row changes one stage only; savings do not add up.",
+                                              "Visibility follows the supplied dependencies and capacities."]}

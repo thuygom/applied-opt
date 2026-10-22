@@ -29,6 +29,19 @@ class Observation:
     cost_usd: float | None = None
 
 
+class StopEvaluation(Exception):
+    """Raise from a runner to stop every further invocation of both variants.
+
+    Use it for conditions that make more runs wasteful or harmful, such as an
+    exhausted quota, rejected credentials, or a broken environment. The report
+    keeps the runs already made and the gate fails with ``evaluation_stopped``.
+    """
+
+    def __init__(self, error_type: str = "StopEvaluation"):
+        super().__init__(error_type)
+        self.error_type = error_type
+
+
 Runner = Callable[[Mapping[str, Any]], Awaitable[Observation | Any]]
 Judge = Callable[[Any, Mapping[str, Any]], Mapping[str, bool]]
 
@@ -89,6 +102,7 @@ async def evaluate(
     timeout_s: float = 30.0,
     max_p95_regression: float = 0.05,
     kind: str = "application",
+    max_invocations: int | None = None,
 ) -> dict[str, Any]:
     """Measure A/B then B/A, without overlapping variants.
 
@@ -96,9 +110,18 @@ async def evaluate(
     and invalid/empty judges fail quality, without logging private exception
     messages. A speedup cannot override a quality failure. Cache states and
     model/reference-time controls remain the caller's responsibility.
+
+    ``max_invocations`` is a budget for paid runners: when the planned count
+    (cases x (warmups + repetitions) x 2) exceeds it, nothing runs. A runner
+    raising :class:`StopEvaluation` ends the evaluation early.
     """
     if not cases or repetitions < 1 or warmups < 0:
         raise ValueError("cases and positive repetitions are required")
+    planned = len(cases) * (warmups + repetitions) * 2
+    if max_invocations is not None and type(max_invocations) is not int:
+        raise ValueError("max_invocations must be an integer")
+    if max_invocations is not None and planned > max_invocations:
+        raise ValueError(f"planned {planned} invocations exceed max_invocations={max_invocations}")
     if len({c.id for c in cases}) != len(cases):
         raise ValueError("case IDs must be unique")
     if not math.isfinite(timeout_s) or timeout_s <= 0:
@@ -112,7 +135,12 @@ async def evaluate(
     traces: dict[str, list[dict[str, Any]]] = {k: [] for k in runners}
     per_case: list[dict[str, Any]] = []
 
+    stopped: dict[str, Any] = {}
+    invocations = 0
+
     async def invoke(runner: Runner, case: Case) -> tuple[Observation, float, str | None]:
+        nonlocal invocations
+        invocations += 1
         start = time.perf_counter()
         try:
             async with asyncio.timeout(timeout_s):
@@ -120,17 +148,27 @@ async def evaluate(
             observation = output if isinstance(output, Observation) else Observation(output)
             return observation, (time.perf_counter() - start) * 1000, None
         except Exception as exc:
-            return Observation(None), (time.perf_counter() - start) * 1000, type(exc).__name__
+            error_type = getattr(exc, "error_type", None) or type(exc).__name__
+            if isinstance(exc, StopEvaluation):
+                stopped.update(case_id=case.id, error_type=error_type)
+            return Observation(None), (time.perf_counter() - start) * 1000, str(error_type)
 
     for case in cases:
+        if stopped:
+            break
         required_check_names: set[str] | None = None
         for _ in range(warmups):
             for runner in runners.values():
-                await invoke(runner, case)
+                if not stopped:
+                    await invoke(runner, case)
         records: dict[str, list[dict[str, Any]]] = {k: [] for k in runners}
         for iteration in range(repetitions):
+            if stopped:
+                break
             order = ("baseline", "candidate") if iteration % 2 == 0 else ("candidate", "baseline")
             for variant in order:
+                if stopped:
+                    break
                 observation, elapsed, error = await invoke(runners[variant], case)
                 checks: dict[str, bool]
                 if error:
@@ -162,15 +200,24 @@ async def evaluate(
                 records[variant].append(record)
                 if not traces[variant] and observation.spans:
                     traces[variant] = _metadata_spans(observation.spans)
-        per_case.append({"id": case.id, **{v: {**latency_summary([r["latency_ms"] for r in rows]), "runs": rows} for v, rows in records.items()}})
+        if any(records.values()):
+            per_case.append({"id": case.id, **{v: {**latency_summary([r["latency_ms"] for r in rows]), "runs": rows} for v, rows in records.items()}})
 
     summaries = {v: latency_summary(times) for v, times in timings.items()}
     quality_ok = all(all_checks["candidate"]) and bool(all_checks["candidate"])
     baseline_ok = all(all_checks["baseline"]) and bool(all_checks["baseline"])
-    p95_ok = summaries["candidate"]["p95_ms"] <= summaries["baseline"]["p95_ms"] * (1 + max_p95_regression)
+
+    def regressed(baseline: Mapping[str, Any], candidate: Mapping[str, Any]) -> bool:
+        if baseline["p95_ms"] is None or candidate["p95_ms"] is None:
+            return False  # A stopped run has no comparable sample; the stop already fails the gate.
+        return candidate["p95_ms"] > baseline["p95_ms"] * (1 + max_p95_regression)
+
+    p95_ok = not regressed(summaries["baseline"], summaries["candidate"])
     # Aggregated p95 may conceal a regression in a small input cohort.
-    case_regressions = [row["id"] for row in per_case if row["candidate"]["p95_ms"] > row["baseline"]["p95_ms"] * (1 + max_p95_regression)]
+    case_regressions = [row["id"] for row in per_case if regressed(row["baseline"], row["candidate"])]
     reasons = []
+    if stopped:
+        reasons.append("evaluation_stopped")
     if not quality_ok:
         reasons.append("candidate_failed_required_checks")
     if not baseline_ok:
@@ -178,7 +225,10 @@ async def evaluate(
     if not p95_ok or case_regressions:
         reasons.append("p95_regression")
     return {
-        "benchmark": {"kind": kind, "repetitions": repetitions, "warmups": warmups, "order": "alternating A/B and B/A per case", **summaries, "cases": per_case, "note": "Small-sample percentiles are descriptive. Validate with production-like load and held-out inputs."},
+        "benchmark": {"kind": kind, "repetitions": repetitions, "warmups": warmups, "order": "alternating A/B and B/A per case", **summaries, "cases": per_case,
+                      "invocations": {"planned": planned, "made": invocations, "budget": max_invocations},
+                      **({"stopped": stopped} if stopped else {}),
+                      "note": "Small-sample percentiles are descriptive. Validate with production-like load and held-out inputs."},
         "quality": {"passed": sum(all_checks["candidate"]), "total": len(all_checks["candidate"]), "baseline_passed": sum(all_checks["baseline"]), "baseline_total": len(all_checks["baseline"]), "baseline_failures": sum(not x for x in all_checks["baseline"]), "candidate_failures": sum(not x for x in all_checks["candidate"]), "failures": failures, "scope": "Only the supplied ground-truth assertions; not a universal correctness guarantee."},
         "gate": {"passed": not reasons, "reasons": reasons, "max_p95_regression": max_p95_regression, "case_regressions": case_regressions},
         "traces": traces,
