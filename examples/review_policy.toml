@@ -1,0 +1,9 @@
+# Listing a function here asserts a reviewed execution contract. The scanner
+# cannot prove absence of remote side effects, resource contention, or mutation.
+[parallel]
+safe_calls = ["fetch_context", "detect_typos"]
+max_parallel_per_batch = 2
+
+[review]
+exclude = ["generated/*", "vendor/*"]
+max_file_bytes = 1000000

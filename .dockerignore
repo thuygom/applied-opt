@@ -1,0 +1,14 @@
+.git
+.env
+.env.*
+.venv
+__pycache__
+*.egg-info
+dist
+build
+tests
+skills
+docs
+examples
+artifacts
+*.applied-opt.bak

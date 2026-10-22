@@ -1,0 +1,717 @@
+{
+  "version": "0.1.0",
+  "date": "2026-10-22",
+  "runtime": "3.12.14",
+  "automated_tests": {
+    "full_suite_before_final_demo_regression": 101,
+    "additional_demo_regression": 1,
+    "total_passed": 102,
+    "failures": 0
+  },
+  "package": {
+    "wheel_installed": true,
+    "cli_review": true,
+    "cli_plan": true,
+    "cli_graph": true,
+    "stdio_initialize": true,
+    "stdio_tools": [
+      "compare_runs",
+      "compile_flow",
+      "plan_execution",
+      "review_code"
+    ],
+    "stdio_review": true,
+    "protocol_stdout_only": true
+  },
+  "browser_checks": [
+    "report metrics match JSON",
+    "dependency option retains sequential execution",
+    "graph JSON compiles to SVG",
+    "Mermaid output shown",
+    "manual graph compilation loses measured provenance",
+    "cycles rejected and old preview invalidated",
+    "tab navigation returns to top"
+  ],
+  "benchmark": {
+    "kind": "synthetic",
+    "repetitions": 7,
+    "warmups": 1,
+    "order": "alternating A/B and B/A per case",
+    "baseline": {
+      "samples": 28,
+      "p50_ms": 173.523,
+      "p95_ms": 174.459,
+      "mean_ms": 173.671
+    },
+    "candidate": {
+      "samples": 28,
+      "p50_ms": 122.121,
+      "p95_ms": 122.739,
+      "mean_ms": 110.897
+    },
+    "cases": [
+      {
+        "id": "simple-record",
+        "baseline": {
+          "samples": 7,
+          "p50_ms": 174.061,
+          "p95_ms": 175.464,
+          "mean_ms": 174.368,
+          "runs": [
+            {
+              "latency_ms": 174.049,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.061,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.74,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.515,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 175.871,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.314,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.023,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        },
+        "candidate": {
+          "samples": 7,
+          "p50_ms": 76.432,
+          "p95_ms": 78.1,
+          "mean_ms": 76.668,
+          "runs": [
+            {
+              "latency_ms": 76.028,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 76.224,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 76.458,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 76.477,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 76.263,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 78.795,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 76.432,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "explicit-meeting",
+        "baseline": {
+          "samples": 7,
+          "p50_ms": 173.511,
+          "p95_ms": 173.639,
+          "mean_ms": 173.46,
+          "runs": [
+            {
+              "latency_ms": 173.212,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.535,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.244,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.494,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.511,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.538,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.683,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        },
+        "candidate": {
+          "samples": 7,
+          "p50_ms": 122.318,
+          "p95_ms": 122.406,
+          "mean_ms": 122.27,
+          "runs": [
+            {
+              "latency_ms": 122.318,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.346,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.093,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.257,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.416,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.381,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.081,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "negation-cancel",
+        "baseline": {
+          "samples": 7,
+          "p50_ms": 173.314,
+          "p95_ms": 173.537,
+          "mean_ms": 173.323,
+          "runs": [
+            {
+              "latency_ms": 173.314,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.136,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.324,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.28,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.556,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.494,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.155,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        },
+        "candidate": {
+          "samples": 7,
+          "p50_ms": 122.169,
+          "p95_ms": 122.648,
+          "mean_ms": 122.244,
+          "runs": [
+            {
+              "latency_ms": 122.092,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.779,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.102,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.005,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.341,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.169,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.217,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "ambiguous-fallback",
+        "baseline": {
+          "samples": 7,
+          "p50_ms": 173.408,
+          "p95_ms": 174.19,
+          "mean_ms": 173.533,
+          "runs": [
+            {
+              "latency_ms": 173.205,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.408,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.15,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.128,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.676,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.806,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.355,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        },
+        "candidate": {
+          "samples": 7,
+          "p50_ms": 122.225,
+          "p95_ms": 123.067,
+          "mean_ms": 122.405,
+          "runs": [
+            {
+              "latency_ms": 122.381,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.081,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.107,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.135,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 123.239,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.225,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.664,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        }
+      }
+    ],
+    "note": "Small-sample percentiles are descriptive. Validate with production-like load and held-out inputs."
+  },
+  "quality": {
+    "passed": 84,
+    "total": 84,
+    "baseline_passed": 84,
+    "baseline_total": 84,
+    "baseline_failures": 0,
+    "candidate_failures": 0,
+    "failures": [],
+    "scope": "Only the supplied ground-truth assertions; not a universal correctness guarantee."
+  },
+  "gate": {
+    "passed": true,
+    "reasons": [],
+    "max_p95_regression": 0.05,
+    "case_regressions": []
+  },
+  "limits": [
+    "Synthetic delays and deterministic fixtures; no production LLM or STT benchmark.",
+    "Docker recipe supplied; Docker engine unavailable for build verification.",
+    "Python source analysis is conservative static inference; reviewed code is never executed.",
+    "Hosted UI is a report viewer and local graph compiler; Python AST endpoint requires supplied local server.",
+    "MCP stdio protocol tested with subprocess, not an external vendor client.",
+    "Skill source validated and trialed; automatic registration blocked by environment policy."
+  ],
+  "wheel_sha256": "6acef85f04409479559282a22eeb46b5abc4de69971a0ec981d2ee5975a99a11"
+}

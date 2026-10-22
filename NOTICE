@@ -1,0 +1,11 @@
+Applied Opt
+Copyright 2026 Applied Opt contributors
+
+Original implementation for AI application code review and execution optimization.
+CodeRabbit's public documentation inspired the review workflow. This project is
+not affiliated with, endorsed by, or derived from CodeRabbit's implementation.
+Paper Studio MCP's public documentation informed the editor/compile/preview
+workflow. No application source from that project is incorporated.
+
+Examples and benchmark fixtures are synthetic. No private application source,
+production traces, customer inputs, or recordings are included.

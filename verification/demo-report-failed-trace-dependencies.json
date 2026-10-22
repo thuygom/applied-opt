@@ -1,0 +1,1478 @@
+{
+  "benchmark": {
+    "kind": "synthetic",
+    "repetitions": 7,
+    "warmups": 1,
+    "order": "alternating A/B and B/A per case",
+    "baseline": {
+      "samples": 28,
+      "p50_ms": 173.64,
+      "p95_ms": 174.305,
+      "mean_ms": 173.721
+    },
+    "candidate": {
+      "samples": 28,
+      "p50_ms": 122.378,
+      "p95_ms": 122.892,
+      "mean_ms": 110.87
+    },
+    "cases": [
+      {
+        "id": "simple-record",
+        "baseline": {
+          "samples": 7,
+          "p50_ms": 173.486,
+          "p95_ms": 174.067,
+          "mean_ms": 173.585,
+          "runs": [
+            {
+              "latency_ms": 173.632,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.12,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.942,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.486,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.331,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.383,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.2,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            }
+          ]
+        },
+        "candidate": {
+          "samples": 7,
+          "p50_ms": 75.976,
+          "p95_ms": 76.186,
+          "mean_ms": 75.954,
+          "runs": [
+            {
+              "latency_ms": 76.217,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 75.847,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 76.112,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 76.06,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 75.976,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 75.614,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 75.854,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 7,
+              "cost_usd": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "explicit-meeting",
+        "baseline": {
+          "samples": 7,
+          "p50_ms": 173.612,
+          "p95_ms": 174.61,
+          "mean_ms": 173.81,
+          "runs": [
+            {
+              "latency_ms": 173.605,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.612,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.867,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.506,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.417,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.737,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.929,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            }
+          ]
+        },
+        "candidate": {
+          "samples": 7,
+          "p50_ms": 122.402,
+          "p95_ms": 122.647,
+          "mean_ms": 122.417,
+          "runs": [
+            {
+              "latency_ms": 122.428,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.337,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.402,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.585,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.215,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.282,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.673,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "negation-cancel",
+        "baseline": {
+          "samples": 7,
+          "p50_ms": 173.602,
+          "p95_ms": 174.037,
+          "mean_ms": 173.667,
+          "runs": [
+            {
+              "latency_ms": 173.863,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.691,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.339,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.525,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.111,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.537,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.602,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            }
+          ]
+        },
+        "candidate": {
+          "samples": 7,
+          "p50_ms": 122.676,
+          "p95_ms": 122.882,
+          "mean_ms": 122.543,
+          "runs": [
+            {
+              "latency_ms": 122.354,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.938,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.265,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.089,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.73,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.752,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.676,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "ambiguous-fallback",
+        "baseline": {
+          "samples": 7,
+          "p50_ms": 173.746,
+          "p95_ms": 174.247,
+          "mean_ms": 173.823,
+          "runs": [
+            {
+              "latency_ms": 173.878,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.698,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.783,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 174.405,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.746,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.648,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 173.602,
+              "checks": {
+                "execution_succeeded": false
+              },
+              "calls": null,
+              "cost_usd": null
+            }
+          ]
+        },
+        "candidate": {
+          "samples": 7,
+          "p50_ms": 122.482,
+          "p95_ms": 123.05,
+          "mean_ms": 122.564,
+          "runs": [
+            {
+              "latency_ms": 122.807,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.482,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.435,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.487,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.416,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 122.164,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            },
+            {
+              "latency_ms": 123.154,
+              "checks": {
+                "summary_correct": true,
+                "tasks_preserved": true,
+                "schedule_datetime_preserved": true
+              },
+              "calls": 9,
+              "cost_usd": null
+            }
+          ]
+        }
+      }
+    ],
+    "note": "Small-sample percentiles are descriptive. Validate with production-like load and held-out inputs."
+  },
+  "quality": {
+    "passed": 84,
+    "total": 84,
+    "baseline_passed": 0,
+    "baseline_total": 28,
+    "baseline_failures": 28,
+    "candidate_failures": 0,
+    "failures": [
+      {
+        "case_id": "simple-record",
+        "variant": "baseline",
+        "iteration": 0,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "simple-record",
+        "variant": "baseline",
+        "iteration": 1,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "simple-record",
+        "variant": "baseline",
+        "iteration": 2,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "simple-record",
+        "variant": "baseline",
+        "iteration": 3,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "simple-record",
+        "variant": "baseline",
+        "iteration": 4,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "simple-record",
+        "variant": "baseline",
+        "iteration": 5,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "simple-record",
+        "variant": "baseline",
+        "iteration": 6,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "explicit-meeting",
+        "variant": "baseline",
+        "iteration": 0,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "explicit-meeting",
+        "variant": "baseline",
+        "iteration": 1,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "explicit-meeting",
+        "variant": "baseline",
+        "iteration": 2,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "explicit-meeting",
+        "variant": "baseline",
+        "iteration": 3,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "explicit-meeting",
+        "variant": "baseline",
+        "iteration": 4,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "explicit-meeting",
+        "variant": "baseline",
+        "iteration": 5,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "explicit-meeting",
+        "variant": "baseline",
+        "iteration": 6,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "negation-cancel",
+        "variant": "baseline",
+        "iteration": 0,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "negation-cancel",
+        "variant": "baseline",
+        "iteration": 1,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "negation-cancel",
+        "variant": "baseline",
+        "iteration": 2,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "negation-cancel",
+        "variant": "baseline",
+        "iteration": 3,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "negation-cancel",
+        "variant": "baseline",
+        "iteration": 4,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "negation-cancel",
+        "variant": "baseline",
+        "iteration": 5,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "negation-cancel",
+        "variant": "baseline",
+        "iteration": 6,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "ambiguous-fallback",
+        "variant": "baseline",
+        "iteration": 0,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "ambiguous-fallback",
+        "variant": "baseline",
+        "iteration": 1,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "ambiguous-fallback",
+        "variant": "baseline",
+        "iteration": 2,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "ambiguous-fallback",
+        "variant": "baseline",
+        "iteration": 3,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "ambiguous-fallback",
+        "variant": "baseline",
+        "iteration": 4,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "ambiguous-fallback",
+        "variant": "baseline",
+        "iteration": 5,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      },
+      {
+        "case_id": "ambiguous-fallback",
+        "variant": "baseline",
+        "iteration": 6,
+        "check": "execution_succeeded",
+        "error_type": "AttributeError"
+      }
+    ],
+    "scope": "Only the supplied ground-truth assertions; not a universal correctness guarantee."
+  },
+  "gate": {
+    "passed": false,
+    "reasons": [
+      "baseline_failed_required_checks"
+    ],
+    "max_p95_regression": 0.05,
+    "case_regressions": []
+  },
+  "traces": {
+    "baseline": [],
+    "candidate": [
+      {
+        "name": "account_context",
+        "start_ms": 0.45703499927185476,
+        "duration_ms": 22.4796239999705,
+        "status": "completed",
+        "depends_on": [],
+        "cache_status": "disabled"
+      },
+      {
+        "name": "memory",
+        "start_ms": 0.4646460001822561,
+        "duration_ms": 18.345559998124372,
+        "status": "completed",
+        "depends_on": [],
+        "cache_status": "disabled"
+      },
+      {
+        "name": "route",
+        "start_ms": 0.4681709979195148,
+        "duration_ms": 6.196149999595946,
+        "status": "completed",
+        "depends_on": [],
+        "cache_status": "disabled"
+      },
+      {
+        "name": "schedule_review",
+        "depends_on": [
+          "generate"
+        ],
+        "start_ms": 23.046280999551527,
+        "end_ms": 23.046280999551527,
+        "status": "skipped",
+        "attempts": 0,
+        "cache_status": "disabled",
+        "capability": "schedules",
+        "error_type": null,
+        "resource": null,
+        "duration_ms": 0.0
+      },
+      {
+        "name": "task_review",
+        "depends_on": [
+          "generate"
+        ],
+        "start_ms": 23.046280999551527,
+        "end_ms": 23.046280999551527,
+        "status": "skipped",
+        "attempts": 0,
+        "cache_status": "disabled",
+        "capability": "tasks",
+        "error_type": null,
+        "resource": null,
+        "duration_ms": 0.0
+      },
+      {
+        "name": "normalize",
+        "depends_on": [
+          "account_context",
+          "memory",
+          "route"
+        ],
+        "start_ms": 23.16975400026422,
+        "end_ms": 31.337422999058617,
+        "status": "completed",
+        "attempts": 1,
+        "cache_status": "disabled",
+        "capability": null,
+        "error_type": null,
+        "resource": null,
+        "duration_ms": 8.167668998794397
+      },
+      {
+        "name": "classify",
+        "depends_on": [
+          "account_context",
+          "memory",
+          "route"
+        ],
+        "start_ms": 23.18768999975873,
+        "end_ms": 35.497777000273345,
+        "status": "completed",
+        "attempts": 1,
+        "cache_status": "disabled",
+        "capability": null,
+        "error_type": null,
+        "resource": null,
+        "duration_ms": 12.310087000514613
+      },
+      {
+        "name": "generate",
+        "depends_on": [
+          "normalize",
+          "classify"
+        ],
+        "start_ms": 35.549793999962276,
+        "end_ms": 65.76837600005092,
+        "status": "completed",
+        "attempts": 1,
+        "cache_status": "disabled",
+        "capability": null,
+        "error_type": null,
+        "resource": null,
+        "duration_ms": 30.218582000088645
+      },
+      {
+        "name": "summary_review",
+        "depends_on": [
+          "generate"
+        ],
+        "start_ms": 65.84498899974278,
+        "end_ms": 76.03199000004679,
+        "status": "completed",
+        "attempts": 1,
+        "cache_status": "disabled",
+        "capability": "summary",
+        "error_type": null,
+        "resource": null,
+        "duration_ms": 10.187001000304008
+      }
+    ]
+  },
+  "schema_version": "1.0",
+  "project": "Applied Opt · synthetic note pipeline",
+  "generated_at": "2026-10-22T04:46:10.599416+00:00",
+  "description": "Measured local wall time around synthetic async service delays. No real model/API/STT performance claim.",
+  "review": {
+    "format_version": "1.0",
+    "kind": "static_review",
+    "findings": [
+      {
+        "rule_id": "AO001",
+        "severity": "info",
+        "title": "Evaluate bounded parallel execution",
+        "path": "synthetic_pipeline.py",
+        "line": 2,
+        "end_line": 3,
+        "evidence": "fetch_context and detect_typos are consecutive awaits with no direct local-name dependency.",
+        "why": "Their latency may overlap, but shared mutable state, a shared GPU, connection limits, or rate limits can erase the benefit.",
+        "recommendation": "Verify read-only and cancellation-safe call contracts, then compare concurrency 1 versus 2 under realistic load; require unchanged outputs and acceptable p95, errors, and cost.",
+        "confidence": "medium",
+        "autofix": {
+          "available": false,
+          "requires": [
+            "explicit safe-call allowlist",
+            "immutable arguments",
+            "resource and cancellation review",
+            "quality and latency comparison"
+          ]
+        }
+      },
+      {
+        "rule_id": "AO002",
+        "severity": "info",
+        "title": "Keep this await chain sequential",
+        "path": "synthetic_pipeline.py",
+        "line": 3,
+        "end_line": 4,
+        "evidence": "Adjacent awaited assignments in create_note share a read/write dependency.",
+        "why": "Starting both calls together can use a stale or unavailable value or change assignment order.",
+        "recommendation": "Preserve this edge. Optimize inside either stage or parallelize independent branches only.",
+        "confidence": "high",
+        "autofix": {
+          "available": false,
+          "requires": []
+        }
+      },
+      {
+        "rule_id": "AO006",
+        "severity": "info",
+        "title": "Check whether this analysis capability is required",
+        "path": "synthetic_pipeline.py",
+        "line": 3,
+        "end_line": 3,
+        "evidence": "detect_typos is awaited directly in create_note, without an enclosing branch.",
+        "why": "This may be required behavior; the AST cannot determine whether the input needs this capability.",
+        "recommendation": "If optional, make one validated route control its prompt, output schema, and downstream review. Preserve explicit requested capabilities and use full analysis on uncertainty; never skip only because input is short.",
+        "confidence": "low",
+        "autofix": {
+          "available": false,
+          "requires": []
+        }
+      },
+      {
+        "rule_id": "AO002",
+        "severity": "info",
+        "title": "Keep this await chain sequential",
+        "path": "synthetic_pipeline.py",
+        "line": 4,
+        "end_line": 5,
+        "evidence": "Adjacent awaited assignments in create_note share a read/write dependency.",
+        "why": "Starting both calls together can use a stale or unavailable value or change assignment order.",
+        "recommendation": "Preserve this edge. Optimize inside either stage or parallelize independent branches only.",
+        "confidence": "high",
+        "autofix": {
+          "available": false,
+          "requires": []
+        }
+      },
+      {
+        "rule_id": "AO006",
+        "severity": "info",
+        "title": "Check whether this analysis capability is required",
+        "path": "synthetic_pipeline.py",
+        "line": 5,
+        "end_line": 5,
+        "evidence": "extract_tasks is awaited directly in create_note, without an enclosing branch.",
+        "why": "This may be required behavior; the AST cannot determine whether the input needs this capability.",
+        "recommendation": "If optional, make one validated route control its prompt, output schema, and downstream review. Preserve explicit requested capabilities and use full analysis on uncertainty; never skip only because input is short.",
+        "confidence": "low",
+        "autofix": {
+          "available": false,
+          "requires": []
+        }
+      }
+    ],
+    "files": [
+      {
+        "path": "synthetic_pipeline.py",
+        "status": "reviewed",
+        "lines": 6
+      }
+    ],
+    "summary": {
+      "files_scanned": 1,
+      "files_with_errors": 0,
+      "findings": 5,
+      "by_severity": {
+        "error": 0,
+        "warning": 0,
+        "info": 5
+      },
+      "optimization_candidates": 1,
+      "measured_speedup": null
+    },
+    "limitations": [
+      "Static evidence is a review candidate, not a measured performance result.",
+      "Call independence does not prove side-effect safety or provider capacity.",
+      "Measure sequential and bounded-parallel p50/p95, errors, cost, and quality at representative load.",
+      "No source is executed, imported, or sent to a model by this scanner."
+    ]
+  },
+  "routing": [
+    {
+      "case_id": "simple-record",
+      "enabled": [
+        "summary"
+      ],
+      "fallback": false,
+      "decision_source": "synthetic fixture; not an NLP classifier"
+    },
+    {
+      "case_id": "explicit-meeting",
+      "enabled": [
+        "summary",
+        "tasks",
+        "schedules"
+      ],
+      "fallback": false,
+      "decision_source": "synthetic fixture; not an NLP classifier"
+    },
+    {
+      "case_id": "negation-cancel",
+      "enabled": [
+        "summary",
+        "tasks",
+        "schedules"
+      ],
+      "fallback": false,
+      "decision_source": "synthetic fixture; not an NLP classifier"
+    },
+    {
+      "case_id": "ambiguous-fallback",
+      "enabled": [
+        "summary",
+        "tasks",
+        "schedules"
+      ],
+      "fallback": true,
+      "decision_source": "synthetic fixture; not an NLP classifier"
+    }
+  ],
+  "cache": {
+    "enabled": false,
+    "reason": "Baseline and candidate both run without result caching."
+  },
+  "tradeoffs": [
+    {
+      "name": "Independent I/O",
+      "kind": "estimate",
+      "recommendation": "bounded_parallel",
+      "selected_concurrency": 3,
+      "estimated_sequential_ms": 46.0,
+      "estimated_parallel_ms": 22.0,
+      "improvement_fraction": 0.5217,
+      "candidates": [
+        {
+          "concurrency": 1,
+          "estimated_ms": 46.0,
+          "calls": 3,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "context",
+              "start_ms": 0.0,
+              "duration_ms": 22.0,
+              "depends_on": [],
+              "resource": "io"
+            },
+            {
+              "name": "memory",
+              "start_ms": 22.0,
+              "duration_ms": 18.0,
+              "depends_on": [],
+              "resource": "io"
+            },
+            {
+              "name": "route",
+              "start_ms": 40.0,
+              "duration_ms": 6.0,
+              "depends_on": [],
+              "resource": "io"
+            }
+          ]
+        },
+        {
+          "concurrency": 2,
+          "estimated_ms": 24.0,
+          "calls": 3,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "context",
+              "start_ms": 0.0,
+              "duration_ms": 22.0,
+              "depends_on": [],
+              "resource": "io"
+            },
+            {
+              "name": "memory",
+              "start_ms": 0.0,
+              "duration_ms": 18.0,
+              "depends_on": [],
+              "resource": "io"
+            },
+            {
+              "name": "route",
+              "start_ms": 18.0,
+              "duration_ms": 6.0,
+              "depends_on": [],
+              "resource": "io"
+            }
+          ]
+        },
+        {
+          "concurrency": 3,
+          "estimated_ms": 22.0,
+          "calls": 3,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "context",
+              "start_ms": 0.0,
+              "duration_ms": 22.0,
+              "depends_on": [],
+              "resource": "io"
+            },
+            {
+              "name": "memory",
+              "start_ms": 0.0,
+              "duration_ms": 18.0,
+              "depends_on": [],
+              "resource": "io"
+            },
+            {
+              "name": "route",
+              "start_ms": 0.0,
+              "duration_ms": 6.0,
+              "depends_on": [],
+              "resource": "io"
+            }
+          ]
+        },
+        {
+          "concurrency": 4,
+          "estimated_ms": 22.0,
+          "calls": 3,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "context",
+              "start_ms": 0.0,
+              "duration_ms": 22.0,
+              "depends_on": [],
+              "resource": "io"
+            },
+            {
+              "name": "memory",
+              "start_ms": 0.0,
+              "duration_ms": 18.0,
+              "depends_on": [],
+              "resource": "io"
+            },
+            {
+              "name": "route",
+              "start_ms": 0.0,
+              "duration_ms": 6.0,
+              "depends_on": [],
+              "resource": "io"
+            }
+          ]
+        }
+      ],
+      "assumptions": [
+        "All listed calls are needed; parallelism does not reduce call count or token cost.",
+        "Dependencies and resource capacities are supplied by the engineer.",
+        "Contention is a supplied scenario multiplier; rate-limit retries and queueing require load measurements.",
+        "Validate candidate quality, cancellation and per-cohort p95 before applying."
+      ],
+      "reason": "Choose the smallest concurrency with the best estimated latency, subject to explicit dependencies, capacities and minimum benefit."
+    },
+    {
+      "name": "One GPU slot",
+      "kind": "estimate",
+      "recommendation": "sequential",
+      "selected_concurrency": 1,
+      "estimated_sequential_ms": 180.0,
+      "estimated_parallel_ms": 180.0,
+      "improvement_fraction": 0.0,
+      "candidates": [
+        {
+          "concurrency": 1,
+          "estimated_ms": 180.0,
+          "calls": 2,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "stt",
+              "start_ms": 0.0,
+              "duration_ms": 100.0,
+              "depends_on": [],
+              "resource": "gpu"
+            },
+            {
+              "name": "speaker",
+              "start_ms": 100.0,
+              "duration_ms": 80.0,
+              "depends_on": [],
+              "resource": "gpu"
+            }
+          ]
+        },
+        {
+          "concurrency": 2,
+          "estimated_ms": 180.0,
+          "calls": 2,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "stt",
+              "start_ms": 0.0,
+              "duration_ms": 100.0,
+              "depends_on": [],
+              "resource": "gpu"
+            },
+            {
+              "name": "speaker",
+              "start_ms": 100.0,
+              "duration_ms": 80.0,
+              "depends_on": [],
+              "resource": "gpu"
+            }
+          ]
+        },
+        {
+          "concurrency": 3,
+          "estimated_ms": 180.0,
+          "calls": 2,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "stt",
+              "start_ms": 0.0,
+              "duration_ms": 100.0,
+              "depends_on": [],
+              "resource": "gpu"
+            },
+            {
+              "name": "speaker",
+              "start_ms": 100.0,
+              "duration_ms": 80.0,
+              "depends_on": [],
+              "resource": "gpu"
+            }
+          ]
+        },
+        {
+          "concurrency": 4,
+          "estimated_ms": 180.0,
+          "calls": 2,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "stt",
+              "start_ms": 0.0,
+              "duration_ms": 100.0,
+              "depends_on": [],
+              "resource": "gpu"
+            },
+            {
+              "name": "speaker",
+              "start_ms": 100.0,
+              "duration_ms": 80.0,
+              "depends_on": [],
+              "resource": "gpu"
+            }
+          ]
+        }
+      ],
+      "assumptions": [
+        "All listed calls are needed; parallelism does not reduce call count or token cost.",
+        "Dependencies and resource capacities are supplied by the engineer.",
+        "Contention is a supplied scenario multiplier; rate-limit retries and queueing require load measurements.",
+        "Validate candidate quality, cancellation and per-cohort p95 before applying."
+      ],
+      "reason": "Choose the smallest concurrency with the best estimated latency, subject to explicit dependencies, capacities and minimum benefit."
+    },
+    {
+      "name": "Contended provider",
+      "kind": "estimate",
+      "recommendation": "sequential",
+      "selected_concurrency": 1,
+      "estimated_sequential_ms": 180.0,
+      "estimated_parallel_ms": 180.0,
+      "improvement_fraction": 0.0,
+      "candidates": [
+        {
+          "concurrency": 1,
+          "estimated_ms": 180.0,
+          "calls": 2,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "a",
+              "start_ms": 0.0,
+              "duration_ms": 100.0,
+              "depends_on": [],
+              "resource": "llm"
+            },
+            {
+              "name": "b",
+              "start_ms": 100.0,
+              "duration_ms": 80.0,
+              "depends_on": [],
+              "resource": "llm"
+            }
+          ]
+        },
+        {
+          "concurrency": 2,
+          "estimated_ms": 250.0,
+          "calls": 2,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "a",
+              "start_ms": 0.0,
+              "duration_ms": 250.0,
+              "depends_on": [],
+              "resource": "llm"
+            },
+            {
+              "name": "b",
+              "start_ms": 0.0,
+              "duration_ms": 200.0,
+              "depends_on": [],
+              "resource": "llm"
+            }
+          ]
+        },
+        {
+          "concurrency": 3,
+          "estimated_ms": 250.0,
+          "calls": 2,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "a",
+              "start_ms": 0.0,
+              "duration_ms": 250.0,
+              "depends_on": [],
+              "resource": "llm"
+            },
+            {
+              "name": "b",
+              "start_ms": 0.0,
+              "duration_ms": 200.0,
+              "depends_on": [],
+              "resource": "llm"
+            }
+          ]
+        },
+        {
+          "concurrency": 4,
+          "estimated_ms": 250.0,
+          "calls": 2,
+          "cost_usd": 0.0,
+          "spans": [
+            {
+              "name": "a",
+              "start_ms": 0.0,
+              "duration_ms": 250.0,
+              "depends_on": [],
+              "resource": "llm"
+            },
+            {
+              "name": "b",
+              "start_ms": 0.0,
+              "duration_ms": 200.0,
+              "depends_on": [],
+              "resource": "llm"
+            }
+          ]
+        }
+      ],
+      "assumptions": [
+        "All listed calls are needed; parallelism does not reduce call count or token cost.",
+        "Dependencies and resource capacities are supplied by the engineer.",
+        "Contention is a supplied scenario multiplier; rate-limit retries and queueing require load measurements.",
+        "Validate candidate quality, cancellation and per-cohort p95 before applying."
+      ],
+      "reason": "Choose the smallest concurrency with the best estimated latency, subject to explicit dependencies, capacities and minimum benefit."
+    }
+  ],
+  "conditional": {
+    "kind": "estimate",
+    "gated": {
+      "expected_ms": 20.0,
+      "expected_cost_usd": 0.001
+    },
+    "speculative": {
+      "expected_ms": 19.0,
+      "expected_cost_usd": 0.01
+    },
+    "assumptions": [
+      "Side effects are prohibited for speculative work.",
+      "The branch can run without the decision output.",
+      "Unneeded speculative work is fully billed; client cancellation need not cancel provider billing.",
+      "Routing correctness must be validated separately."
+    ]
+  },
+  "controls": {
+    "reference_time": "2030-10-01T09:00:00+09:00",
+    "model": "synthetic deterministic fixture",
+    "cache": "disabled",
+    "load": "one request at a time",
+    "raw_inputs_in_report": false
+  }
+}

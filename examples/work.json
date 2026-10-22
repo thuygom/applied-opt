@@ -1,0 +1,13 @@
+{
+  "steps": [
+    {"name": "context", "duration_ms": 220, "concurrency_safe": true, "resource": "db"},
+    {"name": "memory", "duration_ms": 180, "concurrency_safe": true, "resource": "retrieval"},
+    {"name": "route", "duration_ms": 60, "concurrency_safe": true, "resource": "llm"},
+    {"name": "generate", "duration_ms": 600, "depends_on": ["context", "memory", "route"], "concurrency_safe": true, "resource": "llm"},
+    {"name": "review", "duration_ms": 200, "depends_on": ["generate"], "concurrency_safe": true, "resource": "llm"}
+  ],
+  "max_concurrency": 4,
+  "resource_limits": {"llm": 2, "db": 4, "retrieval": 2},
+  "launch_overhead_ms": 2,
+  "min_improvement": 0.05
+}

@@ -1,0 +1,23 @@
+--- a/review_target.py
++++ b/review_target.py
+@@ -3,6 +3,7 @@
+ This intentionally contains review findings. Use it to try the scanner and
+ the opt-in parallel patch; it is not a recommended application architecture.
+ """
++from applied_opt.runtime import gather_strict as _applied_opt_gather
+ 
+ import asyncio
+ import time
+@@ -24,8 +25,10 @@
+ 
+ 
+ async def sequential_pipeline(text: str, subject_id: str):
+-    context = await fetch_context(subject_id)
+-    typos = await detect_typos(text)
++    context, typos = await _applied_opt_gather(
++        fetch_context(subject_id),
++        detect_typos(text),
++    )
+     note = await generate_note(text, context)
+     return {"note": note, "typos": typos}
+ 

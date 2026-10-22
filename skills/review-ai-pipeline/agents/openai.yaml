@@ -1,0 +1,4 @@
+interface:
+  display_name: "Applied Opt Review"
+  short_description: "Review AI latency, routing and concurrency trade-offs"
+  default_prompt: "Use $review-ai-pipeline to review this AI application for latency, sequential versus parallel execution, safe routing, caching, and quality regressions."

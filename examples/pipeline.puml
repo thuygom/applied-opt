@@ -1,0 +1,25 @@
+@startuml
+top to bottom direction
+skinparam shadowing false
+title Applied Opt · synthetic note pipeline · candidate
+rectangle "account_context · 22.5 ms · completed" as n0
+rectangle "memory · 18.3 ms · completed" as n1
+rectangle "route · 6.2 ms · completed" as n2
+rectangle "schedule_review · 0.0 ms · skipped" as n3
+rectangle "task_review · 0.0 ms · skipped" as n4
+rectangle "normalize · 8.2 ms · completed" as n5
+rectangle "classify · 12.3 ms · completed" as n6
+rectangle "generate · 30.3 ms · completed" as n7
+rectangle "summary_review · 10.2 ms · completed" as n8
+n0 --> n5
+n0 --> n6
+n1 --> n5
+n1 --> n6
+n2 --> n5
+n2 --> n6
+n5 --> n7
+n6 --> n7
+n7 --> n3
+n7 --> n4
+n7 --> n8
+@enduml
