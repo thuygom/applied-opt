@@ -32,6 +32,47 @@ class ReviewTests(unittest.TestCase):
         self.assertNotIn("AO004", self.rules(bounded))
         self.assertNotIn("AO008", self.rules(bounded))
 
+    def test_gather_with_cleanup_that_cancels_every_task_is_not_a_lifecycle_finding(self):
+        cleaned = (
+            "import asyncio\n"
+            "async def f():\n"
+            "    pending = [asyncio.create_task(a()), asyncio.create_task(b())]\n"
+            "    try:\n"
+            "        return await asyncio.gather(*pending)\n"
+            "    finally:\n"
+            "        for task in pending:\n"
+            "            if not task.done():\n"
+            "                task.cancel()\n"
+            "        await asyncio.gather(*pending, return_exceptions=True)\n")
+        rules = self.rules(cleaned)
+        self.assertNotIn("AO008", rules)
+        # A fixed two-task list and the drain in finally start no unbounded fan-out.
+        self.assertNotIn("AO004", rules)
+        named = ("import asyncio\nasync def f():\n    t1 = asyncio.create_task(a())\n    t2 = asyncio.create_task(b())\n"
+                 "    try:\n        return await asyncio.gather(t1, t2)\n    finally:\n        t1.cancel()\n        t2.cancel()\n")
+        self.assertNotIn("AO008", self.rules(named))
+
+    def test_partial_cleanup_and_inline_coroutines_keep_the_lifecycle_finding(self):
+        partial = ("import asyncio\nasync def f():\n    memory = asyncio.create_task(load())\n"
+                   "    try:\n        return await asyncio.gather(fetch(), memory)\n"
+                   "    finally:\n        memory.cancel()\n")
+        self.assertIn("AO008", self.rules(partial))
+        one_of_two = ("import asyncio\nasync def f():\n    t1 = asyncio.create_task(a())\n    t2 = asyncio.create_task(b())\n"
+                      "    try:\n        return await asyncio.gather(t1, t2)\n    finally:\n        t1.cancel()\n")
+        self.assertIn("AO008", self.rules(one_of_two))
+
+    def test_semaphore_wrapper_and_fixed_list_bound_the_fanout(self):
+        gated = ("import asyncio\nasync def f(items):\n    gate = asyncio.Semaphore(4)\n"
+                 "    async def bounded(item):\n        async with gate:\n            return await work(item)\n"
+                 "    return await asyncio.gather(*(bounded(i) for i in items), return_exceptions=True)\n")
+        self.assertNotIn("AO004", self.rules(gated))
+        ungated = ("import asyncio\nasync def f(items):\n    async def call(item):\n        return await work(item)\n"
+                   "    return await asyncio.gather(*(call(i) for i in items), return_exceptions=True)\n")
+        self.assertIn("AO004", self.rules(ungated))
+        grown = ("import asyncio\nasync def f(items):\n    calls = [first()]\n    for item in items:\n"
+                 "        calls.append(work(item))\n    return await asyncio.gather(*calls, return_exceptions=True)\n")
+        self.assertIn("AO004", self.rules(grown))
+
     def test_shadowed_library_names_do_not_get_library_findings(self):
         sources = [
             "import time\nasync def f(time):\n    time.sleep(1)\n",

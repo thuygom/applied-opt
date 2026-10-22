@@ -37,7 +37,9 @@ dependencies just to review it.
 
 Inspect findings against source. Follow callers, dependency data, SDK
 configuration, and failure paths. Dismiss unsupported candidates with a short
-reason. Identify semantic issues that pattern rules cannot detect.
+reason. Identify semantic issues that pattern rules cannot detect; in practice
+the costly defects are semantic (a skipped stage that also produced another
+output, a gate evaluated on an aggregate copy), not syntactic.
 
 If an Applied Opt MCP connection is already available, use `review_code` for
 supplied snippets, `plan_execution` for declared stage contracts, `compile_flow`
@@ -57,13 +59,20 @@ bounded-parallel, and conditional execution where each is feasible.
 - Trace routing through prompt assembly, required output properties, downstream
   reviewers, and fallbacks. Retain all capabilities on uncertainty; preserve
   explicitly requested work and dependency closure.
+- For every stage a route can skip, list all outputs it produces and confirm
+  each is either unneeded or still produced. Evaluate gates per item.
+- When a new selector replaces an older judgment, verify the old call is gone
+  and count model round trips on the short path before and after.
 - Reject input-length-only reasons to omit tasks or schedules. Review negation,
   dates, timezone, past/future interpretation, and ambiguous intent explicitly.
 - Check exact cache identity and revision coverage. Preserve computation when
   scope or key safety is incomplete.
 - Locate nested retries, uncancelled siblings, blocking work, duplicate
   generation, and polling delay. Assign one retry owner and a request deadline
-  that includes scheduling, retries, and routing.
+  that includes scheduling, retries, and routing. A single owner still honors
+  `retry-after` and jitters its backoff.
+- When identical inputs give different outputs, look for a prompt rule and a
+  code normalizer that disagree before blaming sampling.
 - Preserve model, prompt meaning, reasoning settings, and output contracts.
   Treat their changes as separate experiments requiring explicit task scope and
   functional evaluation.
@@ -91,6 +100,18 @@ Run baseline and candidate on identical cases with controlled model, prompt,
 account context, reference time, timezone, and cache state. Interleave A/B and
 B/A runs; declare warmups, repetitions, and representative load. Measure
 end-to-end latency and stage timings.
+
+Use `applied_opt.evaluation.evaluate`. When the two variants are revisions of
+the same package, give each its own process: a `ProcessRunner` starting the
+deployed image with `applied_opt/worker.py` mounted, the candidate source
+mounted over the deployed one, and production volumes read-only. Smoke-test one
+case once per variant, then run the plan with `max_invocations` set to the
+stated count; have runners raise `StopEvaluation` on quota or credential
+errors. Guard harness scripts with `if __name__ == "__main__"`.
+
+Before proposing the next optimization, replay the candidate's stage spans with
+`planning.work_from_spans` and `sensitivity` (or `applied-opt plan
+--sensitivity`) to find which stage reduction would be visible end to end.
 
 Require stable named ground-truth checks on every result. Check exact task and
 schedule content when required; equal item counts are insufficient. Block a

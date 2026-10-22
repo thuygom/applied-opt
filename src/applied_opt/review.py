@@ -76,6 +76,93 @@ def _blocks(body: list[ast.stmt]):
                 yield from _blocks(case.body)
 
 
+_TRY_NODES = tuple(t for t in (ast.Try, getattr(ast, "TryStar", None)) if t is not None)
+
+
+def _ancestors(node: ast.AST, parents: Mapping[ast.AST, ast.AST], stop: ast.AST):
+    current = parents.get(node)
+    while current is not None and current is not stop:
+        yield current
+        current = parents.get(current)
+
+
+def _within(statements: list[ast.stmt], node: ast.AST) -> bool:
+    return any(node is child for stmt in statements for child in ast.walk(stmt))
+
+
+def _cancel_target(node: ast.AST) -> str | None:
+    if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "cancel" and isinstance(node.func.value, ast.Name)):
+        return node.func.value.id
+    return None
+
+
+def _drains_in_finally(call: ast.Call, function: ast.AST, parents: Mapping[ast.AST, ast.AST]) -> bool:
+    """A gather inside ``finally`` collects already-started tasks; it starts no fan-out."""
+    return any(isinstance(node, _TRY_NODES) and _within(node.finalbody, call)
+               for node in _ancestors(call, parents, function))
+
+
+def _siblings_cancelled(call: ast.Call, function: ast.AST, parents: Mapping[ast.AST, ast.AST]) -> bool:
+    """Every gathered awaitable is a task an enclosing try's cleanup cancels.
+
+    Only names are accepted: ``gather(a, b)`` with ``a.cancel()`` and
+    ``b.cancel()``, or ``gather(*tasks)`` with ``for t in tasks: t.cancel()``.
+    An inline coroutine has no handle to cancel, so it keeps the finding.
+    """
+    for node in _ancestors(call, parents, function):
+        if not (isinstance(node, _TRY_NODES) and _within(node.body, call)):
+            continue
+        cleanup = [*node.finalbody, *(stmt for handler in node.handlers for stmt in handler.body)]
+        names, iterated = set(), set()
+        for child in (n for stmt in cleanup for n in ast.walk(stmt)):
+            if target := _cancel_target(child):
+                names.add(target)
+            if (isinstance(child, ast.For) and isinstance(child.target, ast.Name)
+                    and isinstance(child.iter, ast.Name)
+                    and any(_cancel_target(n) == child.target.id for n in ast.walk(child))):
+                iterated.add(child.iter.id)
+        if call.args and all(
+                (isinstance(arg, ast.Name) and arg.id in names)
+                or (isinstance(arg, ast.Starred) and isinstance(arg.value, ast.Name) and arg.value.id in iterated)
+                for arg in call.args):
+            return True
+    return False
+
+
+def _fixed_sequence(name: str, owned: list[ast.AST]) -> bool:
+    """One list/tuple literal binding that is never grown or rebound."""
+    stores = [n for n in owned if isinstance(n, ast.Name) and n.id == name and isinstance(n.ctx, ast.Store)]
+    literal = [n for n in owned if isinstance(n, ast.Assign) and len(n.targets) == 1
+               and isinstance(n.targets[0], ast.Name) and n.targets[0].id == name
+               and isinstance(n.value, (ast.List, ast.Tuple))
+               and not any(isinstance(element, ast.Starred) for element in n.value.elts)]
+    grown = any(isinstance(n, ast.AugAssign) and isinstance(n.target, ast.Name) and n.target.id == name
+                or isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                and n.func.attr in {"append", "extend", "insert"}
+                and isinstance(n.func.value, ast.Name) and n.func.value.id == name
+                for n in owned)
+    return len(stores) == 1 and len(literal) == 1 and not grown
+
+
+def _semaphore_bounded(value: ast.AST, function: ast.AST, tree: ast.AST) -> bool:
+    """Items call a local async wrapper that awaits under ``async with <semaphore>``."""
+    if not (isinstance(value, (ast.GeneratorExp, ast.ListComp)) and isinstance(value.elt, ast.Call)
+            and isinstance(value.elt.func, ast.Name)):
+        return False
+    scopes = [*ast.walk(function), *getattr(tree, "body", [])]
+    semaphores = {target.id for node in scopes if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call)
+                  and _call_name(node.value).split(".")[-1] in {"Semaphore", "BoundedSemaphore"}
+                  for target in node.targets if isinstance(target, ast.Name)}
+    wrappers = [n for n in ast.walk(function) if isinstance(n, ast.AsyncFunctionDef)
+                and n is not function and n.name == value.elt.func.id]
+    return bool(wrappers) and all(
+        any(isinstance(node, ast.AsyncWith) and any(isinstance(item.context_expr, ast.Name)
+                                                    and item.context_expr.id in semaphores for item in node.items)
+            for node in ast.walk(wrapper))
+        for wrapper in wrappers)
+
+
 def _finding(rule_id: str, severity: str, title: str, filename: str, node: ast.AST,
              evidence: str, why: str, recommendation: str, confidence: str = "medium",
              *, end_line: int | None = None, prerequisites: tuple[str, ...] = ()) -> dict[str, Any]:
@@ -235,7 +322,10 @@ def review_source(source: str, filename: str = "input.py") -> dict[str, Any]:
                     "Use the library's async API or a bounded worker pool after checking cancellation and thread safety. Benchmark event-loop lag.",
                     "high"))
             if name == "asyncio.gather":
-                if any(isinstance(arg, ast.Starred) for arg in call.args):
+                starred = [arg.value for arg in call.args if isinstance(arg, ast.Starred)]
+                bounded = all((isinstance(value, ast.Name) and _fixed_sequence(value.id, owned))
+                              or _semaphore_bounded(value, function, tree) for value in starred)
+                if starred and not bounded and not _drains_in_finally(call, function, parents):
                     findings.append(_finding(
                         "AO004", "warning", "Expanded async fan-out has no visible bound", filename, call,
                         "gather receives an expanded iterable of awaitables.",
@@ -245,7 +335,7 @@ def review_source(source: str, filename: str = "input.py") -> dict[str, Any]:
                 returns_exceptions = any(k.arg == "return_exceptions" and
                                          isinstance(k.value, ast.Constant) and k.value.value is True
                                          for k in call.keywords)
-                if not returns_exceptions:
+                if not returns_exceptions and not _siblings_cancelled(call, function, parents):
                     findings.append(_finding(
                         "AO008", "warning", "Review sibling lifecycle on gather failure", filename, call,
                         "gather uses its default exception propagation behavior.",

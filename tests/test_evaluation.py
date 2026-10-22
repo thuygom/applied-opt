@@ -3,8 +3,9 @@ import math
 import json
 import unittest
 
-from applied_opt.evaluation import Case, Observation, compare_reports, evaluate, percentile
-from applied_opt.planning import Work, compare_strategies, conditional_tradeoff, estimate_schedule
+from applied_opt.evaluation import Case, Observation, StopEvaluation, compare_reports, evaluate, percentile
+from applied_opt.planning import (Work, compare_strategies, conditional_tradeoff, estimate_schedule,
+                                  sensitivity, what_if, work_from_spans)
 
 
 class EvaluationTests(unittest.IsolatedAsyncioTestCase):
@@ -62,6 +63,39 @@ class EvaluationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(report["traces"]["baseline"][0]["name"], "stage")
 
 
+class BudgetAndStopTests(unittest.IsolatedAsyncioTestCase):
+    async def test_budget_refuses_before_any_paid_call(self):
+        calls = []
+        async def runner(payload):
+            calls.append(payload)
+            return payload
+        cases = [Case(str(i), {"i": i}) for i in range(4)]
+        with self.assertRaises(ValueError):
+            await evaluate(runner, runner, cases, lambda o, e: {"ok": True}, repetitions=3, warmups=1, max_invocations=31)
+        self.assertEqual([], calls)
+
+    async def test_stop_ends_both_variants_and_fails_the_gate(self):
+        calls = {"baseline": 0, "candidate": 0}
+        async def baseline(payload):
+            calls["baseline"] += 1
+            return payload
+        async def candidate(payload):
+            calls["candidate"] += 1
+            if payload["i"] == 1:
+                raise StopEvaluation("insufficient_quota")
+            return payload
+        cases = [Case(str(i), {"i": i}) for i in range(3)]
+        report = await evaluate(baseline, candidate, cases, lambda o, e: {"ok": o is not None},
+                                repetitions=2, warmups=0)
+        self.assertIn("evaluation_stopped", report["gate"]["reasons"])
+        self.assertFalse(report["gate"]["passed"])
+        self.assertEqual({"case_id": "1", "error_type": "insufficient_quota"}, report["benchmark"]["stopped"])
+        # Case 0 ran fully (2+2); case 1 stopped on its first candidate call; case 2 never ran.
+        self.assertEqual({"baseline": 3, "candidate": 3}, calls)
+        self.assertEqual(6, report["benchmark"]["invocations"]["made"])
+        self.assertEqual(["0", "1"], [row["id"] for row in report["benchmark"]["cases"]])
+
+
 class CompareTests(unittest.TestCase):
     def test_missing_case_and_check_fails(self):
         a = {"runs": [{"case_id": "a", "latency_ms": 10, "checks": {"schedule": True}}]}
@@ -116,6 +150,26 @@ class PlanningTests(unittest.TestCase):
         starts = {s["name"]: s["start_ms"] for s in result["spans"]}
         self.assertEqual(starts["exclusive"], 10)
         self.assertEqual(starts["c"], 60)
+
+    def test_trace_replay_shows_which_stage_reduction_is_visible(self):
+        spans = [{"name": "select", "duration_ms": 350}, {"name": "classify", "duration_ms": 2800},
+                 {"name": "typo", "duration_ms": 11000}, {"name": "typo", "duration_ms": 12400},
+                 {"name": "generate", "duration_ms": 5700}, {"name": "review", "duration_ms": 5700},
+                 {"name": "failed", "duration_ms": 900, "status": "error"}]
+        deps = {"classify": ["select"], "typo": ["select"], "generate": ["select", "typo"],
+                "review": ["generate", "classify", "typo"], "unobserved": ["select"]}
+        work = work_from_spans(spans, deps)
+        self.assertEqual({"select", "classify", "typo", "generate", "review"}, {w.name for w in work})
+        self.assertEqual(11700, next(w for w in work if w.name == "typo").duration_ms)
+        stages = {row["name"]: row for row in sensitivity(work)["stages"]}
+        self.assertEqual(5850, stages["typo"]["visible_saving_ms"])
+        # Classification overlaps the serial correction: shortening it is invisible.
+        self.assertEqual(0, stages["classify"]["visible_saving_ms"])
+        overlap = what_if(work, drop_dependencies=[("generate", "typo")])
+        self.assertEqual(23450, overlap["baseline_ms"])
+        self.assertEqual(17750, overlap["scenario_ms"])
+        with self.assertRaises(ValueError):
+            what_if(work, durations={"missing": 1})
 
     def test_speculation_cost_tradeoff(self):
         r=conditional_tradeoff(decision_ms=10,branch_ms=100,needed_probability=.1,branch_cost_usd=1)

@@ -120,6 +120,8 @@ def build_parser() -> argparse.ArgumentParser:
     plan = sub.add_parser("plan", help="Estimate sequential/bounded-parallel scheduling trade-offs")
     plan.add_argument("file")
     plan.add_argument("--output")
+    plan.add_argument("--sensitivity", type=float, metavar="FRACTION",
+                      help="Also estimate, per stage, the end-to-end saving if only that stage were FRACTION faster")
     graph = sub.add_parser("graph", help="Compile source, reports or declared plans into flow diagrams")
     graph.add_argument("file")
     graph.add_argument("--from", dest="source_kind", choices=("source", "report", "plan", "graph"), default="report")
@@ -208,13 +210,18 @@ def main(argv: list[str] | None = None) -> int:
             _write(_json(result), args.output)
             return 0 if result["passed"] else 1
         if args.command == "plan":
-            from .planning import Work, compare_strategies
+            from .planning import Work, compare_strategies, sensitivity
             data = _read_json(args.file)
             steps = data.pop("steps")
             if len(steps) > 200:
                 raise ValueError("At most 200 steps are supported")
             work = [Work(**{**row, "depends_on": tuple(row.get("depends_on", ()))}) for row in steps]
-            _write(_json(compare_strategies(work, **data)), args.output)
+            result = compare_strategies(work, **data)
+            if args.sensitivity is not None:
+                result["sensitivity"] = sensitivity(
+                    work, fraction=args.sensitivity, concurrency=result["selected_concurrency"],
+                    **{k: data[k] for k in ("resource_limits", "contention_multiplier", "launch_overhead_ms") if k in data})
+            _write(_json(result), args.output)
             return 0
         if args.command == "graph":
             from .diagrams import compile_graph, graph_from_plan, graph_from_report, graph_from_source

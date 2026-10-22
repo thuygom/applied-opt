@@ -21,6 +21,10 @@ failures, followed by material performance findings. Avoid unsupported claims.
 Do not present estimates as benchmarks or test counts as proof that model output
 is universally unchanged.
 
+List dismissed static candidates with a one-line reason each (for example,
+cleanup cancels every sibling, fixed-size batch, semaphore-bounded fan-out), so
+the remaining candidates read as deliberate.
+
 ## Measurements
 
 Report baseline/candidate p50/p95, repetitions, errors, required-check outcomes,
@@ -30,6 +34,9 @@ reference time, and cache state. Mark unknown usage or billing as unknown.
 
 State whether providers are real, mocked, or synthetic sleeps. Give the gate
 outcome and concrete reasons. Fail acceptance on missing/failed checks.
+
+Report planned and made invocations, any stop reason, and every paid run made
+outside the plan, including accidental ones.
 
 ## Scope
 

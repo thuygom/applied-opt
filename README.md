@@ -12,10 +12,10 @@ Applied Opt connects line-level code review with execution measurements. It focu
 | --- | --- |
 | Local reviewer | Deterministic Python AST rules with file/line evidence, uncertainty, and recommendations; JSON, Markdown, and SARIF output. |
 | Patch proposer | Produces a diff for two adjacent approved async calls. Explicit safe-call contracts are required. |
-| Planner | Compares sequential and bounded-parallel scheduling under supplied dependencies, resource limits, and contention assumptions. |
+| Planner | Compares sequential and bounded-parallel scheduling under supplied dependencies, resource limits, and contention assumptions; replays measured traces to show which stage reduction would be visible end to end. |
 | Flow compiler | Turns inferred source structure, declared plans, or measured traces into Mermaid, PlantUML, and standalone SVG. |
 | Runtime | Executes declared DAGs, coordinates routing, bounds retries, and supports opt-in exact caching. |
-| Evaluation | Alternates baseline/candidate runs and checks application assertions plus per-case p95 regression. |
+| Evaluation | Alternates baseline/candidate runs and checks application assertions plus per-case p95 regression; runs revisions of one package in separate processes, with a paid-call budget and stop-on-quota. |
 | Dashboard | Displays review findings, measurements, quality gates, traces, and planning estimates. |
 | MCP server | Exposes four read-only local tools over stdio: review, planning, diagram compilation, and run comparison. |
 | Agent skill | Guides semantic review, application-specific invariants, and evidence-backed changes. |

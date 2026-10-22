@@ -36,6 +36,21 @@ class CLITests(unittest.TestCase):
             self.assertIn('gather_strict',source.read_text())
             self.assertEqual(Path(str(source)+'.applied-opt.bak').read_text(),original)
 
+    def test_plan_sensitivity_marks_hidden_stages(self):
+        with tempfile.TemporaryDirectory() as folder:
+            work = Path(folder) / 'work.json'
+            work.write_text(json.dumps({"steps": [
+                {"name": "classify", "duration_ms": 30, "concurrency_safe": True},
+                {"name": "correct", "duration_ms": 120, "concurrency_safe": True},
+                {"name": "generate", "duration_ms": 60, "depends_on": ["correct"], "concurrency_safe": True},
+                {"name": "review", "duration_ms": 50, "depends_on": ["generate", "classify"], "concurrency_safe": True}],
+                "max_concurrency": 2}))
+            output = Path(folder) / 'plan.json'
+            self.assertEqual(main(['plan', str(work), '--sensitivity', '0.5', '--output', str(output)]), 0)
+            stages = {row['name']: row for row in json.loads(output.read_text())['sensitivity']['stages']}
+            self.assertEqual(60, stages['correct']['visible_saving_ms'])
+            self.assertEqual(0, stages['classify']['visible_saving_ms'])
+
     def test_compare_fails_on_missing_schedule(self):
         with tempfile.TemporaryDirectory() as folder:
             a=Path(folder)/'a.json';b=Path(folder)/'b.json'
